@@ -38,15 +38,28 @@ Read [the contribution guide](./CONTRIBUTING.md) before adding or adapting a ski
 
 New independent skills can live under `skills/`. Existing pstack work stays under `pstack/` so the source and its adaptations remain easy to audit.
 
+| Independent skill | What it does |
+|---|---|
+| [monthly-progress-report](./skills/monthly-progress-report/) | Builds a personal monthly report from work records and a previous report, checks claims against dated evidence, and renders a PDF with editable content. Includes an AI Cell format profile. |
+
 ## Install skills
 
-Install the directories you want from [`pstack/skills/`](./pstack/skills/). You can also install the full collection.
+Install the directories you want from [`skills/`](./skills/) or [`pstack/skills/`](./pstack/skills/). You can also install the full collection.
 
 - For Codex, copy each skill directory to `~/.codex/skills/`.
 - For a workspace that follows the Agent Skills convention, copy them to `.agents/skills/`.
 - For another agent, use that runtime's skill directory.
 
 Start a new agent session if the runtime loads its skill registry only at startup.
+
+To inspect or copy skills with Python, run this from the repository root:
+
+```text
+python scripts/sync-skills.py --destination ~/.codex/skills --skill monthly-progress-report
+python scripts/sync-skills.py --destination ~/.codex/skills --skill monthly-progress-report --apply
+```
+
+Repeat `--destination` for multiple agent homes, or omit `--skill` to select both collections. The default prints a plan. `--apply` copies missing files, preserves unrelated skills, and skips any skill with conflicting local edits. Conflicts return exit code 2 and must be reconciled separately. The script does not delete files or create a background sync service.
 
 Most pstack workflows start with `poteto-mode`. Individual skills such as `architect`, `interrogate`, `how`, `why`, and `tdd` can also run directly.
 
