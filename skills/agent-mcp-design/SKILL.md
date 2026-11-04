@@ -1,60 +1,57 @@
 ---
 name: agent-mcp-design
-description: "Design and review AI agents and MCP servers using the user's preferences for agent autonomy, native integrations, progressive discovery, grounded answers, and realistic regression checks. Use for agent or MCP engineering, not routine use of existing tools."
+description: "Design and review AI agents and MCP servers for agent autonomy, minimal context, progressive disclosure, and clear failure tracing. Use for agent or MCP engineering, not routine use of existing tools."
 ---
 
 # Agent and MCP design
 
-Build an environment in which the model can discover relevant information, choose useful tools, and solve the user's task. These are engineering defaults distilled from the author's recurring requests. Follow the current task's requirements and authorization when they differ.
+Optimize for two primary goals:
+
+- **Agent autonomy.** Give the agent enough flexibility to discover information, choose tools, compose requests, and solve the task without fighting the MCP or architecture.
+- **Context efficiency.** Ruthlessly remove redundant instructions, tool descriptions, schemas, and output. Keep as few instructions as will reliably do the job.
+
+Progressive disclosure is central to the architecture. Reveal what the agent needs when it needs it. Clear observability supplies the feedback needed to diagnose failures and improve both goals. Follow the current task's requirements and authorization.
 
 ## Establish the useful capability
 
-Start with who will use the agent, the questions or actions they need, and the sources that can support them. Inspect real API responses, documents, data samples, and schemas before choosing tables or tools. Check what existing MCPs already expose and identify the additional capability a new integration earns.
+Identify the user, their actual questions or actions, and the sources that support them. Inspect real API responses, documents, data samples, and schemas. Check existing MCPs before building another. Describe one realistic interaction through discovery, tool calls, returned information, and the final answer or file.
 
-Describe one realistic interaction from the user's request through discovery, tool calls, returned information, and the final answer or file. Use that interaction to assess the design. A connected endpoint alone does not show that the system is useful.
+## Prefer native behavior and lean integration
 
-## Prefer native behavior and configuration
+Check the deployed version, current upstream documentation, supported configuration, and stock behavior before adding code. Prefer native framework capabilities and configuration. Check upstream fixes before maintaining a fork. A demonstrated gap can justify a small coherent change. Removing custom code must preserve the user experience and answer quality.
 
-Inspect the actual deployed version, current upstream documentation, supported configuration, and stock behavior before adding custom code. In a FastMCP or LibreChat integration, first look for the framework's existing implementation of the required behavior. Check upstream fixes before maintaining a fork or copying a service into the application repository.
+Use native file handling, document understanding, managed search, sandboxes, and structured outputs when they meet the requirement. Attach metadata to the actual document. Verify a representative input before adding preprocessing or scaling ingestion. Do not freeze historical provider choices into permanent requirements.
 
-Prefer configuration and existing behaviors. When a demonstrated gap remains, make the smallest coherent code change and explain the gap it closes. Compare with a stock baseline when investigating whether a patch is still needed. Removing custom code must preserve the relevant user experience and answer quality.
+## Give the agent room to reason
 
-Use native file upload, document understanding, managed search, sandbox, and structured-output capabilities when they meet the requirement. Attach metadata to the actual document during ingestion. Do not add OCR, conversion, splitting, local extraction, or a bespoke retrieval pipeline merely from habit. Verify one representative input first, then address any demonstrated capability limit and scale the working path.
+Expose purposeful, composable tools with authoritative contracts. Let the agent choose relevant sources, filters, requests, and combinations within the supported operations and authorization. Consider schema discovery followed by request execution when it makes an integration more flexible. Avoid forcing every task through a rigid path or adding a tool for every anticipated question.
 
-## Give the agent schemas and room to reason
+Keep stable role expectations concise. Return source-specific guidance with the relevant discovery result. Choose direct tools and programmatic tool calling deliberately, avoiding redundant exposure. Server-side retrieval intelligence is useful when it has a clear purpose. Diagnose weak answers before adding more instructions or routing code.
 
-Expose purposeful, composable tools with authoritative contracts. Let the model choose relevant sources, filters, requests, and combinations. Consider schema discovery followed by request execution when it makes an API integration leaner and more flexible. The service still enforces its supported operations, permissions, and input contract.
+## Make progressive disclosure the default
 
-Keep prompts concise. Give stable role and answer expectations in the base instructions, then return source-specific usage guidance with the relevant discovery result. Avoid adding a scripted route or a longer system prompt to compensate for every weak answer. First identify whether the problem is model reasoning, missing context, the tool contract, retrieval, or infrastructure.
+Start with compact capabilities or categories. Reveal the selected source's schema, definitions, filters, and instructions only when needed. Avoid initial catalog dumps and repeating guidance across the system prompt, tool descriptions, and results. Inspect what the model actually receives, including large payloads and duplicated discovery calls.
 
-Choose direct tools and programmatic tool calling deliberately, using supported runtime behavior. Avoid redundant exposure that adds context or ambiguity without a useful capability. Server-side retrieval intelligence is valid when it has a clear purpose; autonomy does not require removing every server-side model call.
+Cut context without losing meaning. Preserve relevant units, periods, methodology, geography, and source coverage. Do not invent dimensions or apply filters outside their scope. Return only the data and metadata needed for the next decision or a verifiable answer. Keep provider-internal identifiers behind the interface unless the caller needs them.
 
-## Reveal context progressively and truthfully
+## Keep known facts and access deterministic
 
-Start discovery with compact categories and descriptions. Return the selected source's schema, dimensions, definitions, filters, and instructions when needed. Avoid dumping every indicator, author, filter value, or full catalog into the initial context. Keep provider-internal identifiers behind the client-facing interface unless the caller actually needs them.
+Use supported structured outputs and validation for machine-readable contracts. Derive citation labels, document identity, and dates from authoritative metadata or native runtime values. Keep source statements, calculations, and inferred interpretation distinguishable. For decision support, gather grounded facts and useful citations so the person can make the consequential judgment.
 
-Preserve the source's real meaning: units, time periods, methodology, geography, definitions, and coverage. Do not invent dimensions or apply a filter outside its valid scope. Explain why a variable or source answers the question. Provide the metadata needed to verify the result without duplicating the same description across prompts and code.
+Use supported consent, identity, token-storage, refresh, and access mechanisms for private data. Autonomy does not broaden permission. Use the framework's error contract and preserve useful validation details. Failed operations must remain distinguishable from successful empty results.
 
-## Make factual contracts deterministic
+## Make failures easy to find and explain
 
-Use supported structured outputs and validation for required machine-readable shapes. Derive citation labels, document identity, dates, and other known facts from authoritative metadata or native runtime values. Do not ask the model to guess values the system already knows.
+Design observability with the system. Prefer supported tracing, such as Langfuse, that connects a user request to model calls, tool calls, retrieval or execution steps, and the final outcome. Make the failed step, error, timing, and relevant request context easy to inspect. Capture enough bounded diagnostic detail to explain the failure, with appropriate privacy controls.
 
-Use the framework's error contract and preserve useful validation feedback. An error must remain distinguishable from a successful empty result. Fix a broken tool or data contract before adding another tracing adapter or prompt workaround around its symptoms.
+Verify the failure path: a controlled tool or model failure must appear as a failure in the trace and be easy to locate. Check whether the agent recovered and whether the user actually received a usable result. Healthy endpoints or installed instrumentation alone do not establish workflow success.
 
-For private-data integrations, design the actual consent, identity, token-storage, refresh, and access boundaries using supported mechanisms. Preserve authorization across the complete workflow. Agent autonomy does not grant additional access or permission to take consequential actions.
+Use failed traces to iterate. Distinguish model reasoning, missing context, tool contracts, data or retrieval defects, and infrastructure failures. Fix the responsible layer, retain representative failures as regression cases, and compare subsequent traces. Prefer changes that preserve autonomy and remove unnecessary context.
 
-## Ground answers and preserve human judgment
+## Verify the complete experience and existing behavior
 
-Make decision-support agents collect the relevant facts and resources, cite them, and help the person assess the available actions. Keep source statements, calculations, and inferred interpretation distinguishable. Avoid unsupported conclusions, claims of expertise, and recommendations that skip the evidence needed for the person's decision.
+Use natural questions, representative documents, and historical successes and failures. Exercise cross-tool workflows where needed. Inspect actual answers, data, citations, files, downloads, and follow-up behavior. Check the UI when affected. Citations must open the intended source and support the claim. Use page anchors only when verified.
 
-Verify that citations open the intended source and support the associated claim. Prefer useful document or passage references over a generic repository link. Add page anchors only when the system can verify them. Preserve the project's citation policy and the source metadata the reader needs.
+Prioritize regressions alongside new capabilities. Keep prompts, files, configuration, and concurrency comparable when comparing versions. Inspect actual context, tool traces, quality, grounding, latency, tool-call count, cost, and resources as relevant. State coverage limits and distinguish model-quality issues from systemic defects.
 
-## Test the real workflow and protect existing behavior
-
-Use natural domain questions, representative documents, and real historical successes and failures. Include cross-tool workflows where users need them. Inspect the actual answer, returned data, citations, generated file, and download or follow-up behavior relevant to the change. Check the user interface when the change can affect it.
-
-Prioritize regression coverage as well as the new capability. For a comparison or load replay, keep the relevant prompts, files, configuration, and concurrency comparable. Inspect tool traces to locate errors, wasted calls, and latency. Report quality, grounding, completed workflows, tool-call count, latency, cost, and resource use when relevant and observable. State sampling and coverage limits beside the result.
-
-Separate model-quality problems from missing capabilities, data defects, and operational failures. Do not solve all of them by adding code or assume that a more capable model repairs a broken system. Choose checks proportional to the change and reuse existing evaluation, deployment, and synchronization mechanisms.
-
-Deliver the requested design, implementation, or review with the native capabilities reused, remaining custom-code justification, user-visible behavior, and verification evidence. Historical provider choices, tool counts, budgets, review panels, and rollout approvals are examples, not permanent requirements or authority for the current task.
+Reuse existing verification and delivery mechanisms. Deliver the requested result with evidence of agent flexibility, context economy, visible failures, and preserved behavior. Historical tool counts, budgets, review panels, and rollout approvals do not govern a new task.

@@ -40,7 +40,7 @@ New independent skills can live under `skills/`. Existing pstack work stays unde
 
 | Independent skill | What it does |
 |---|---|
-| [agent-mcp-design](./skills/agent-mcp-design/) | Captures Mayank's recurring engineering preferences for autonomous agents, native integrations, progressive tool discovery, grounded answers, and realistic regression checks. |
+| [agent-mcp-design](./skills/agent-mcp-design/) | Captures Mayank's priorities for agent autonomy, minimal context, progressive disclosure, clear failure tracing, and realistic regression checks. |
 | [monthly-progress-report](./skills/monthly-progress-report/) | Builds a personal monthly report from work records and a previous report, checks claims against dated evidence, and renders a PDF with editable content. Includes an AI Cell format profile. |
 
 ## Install skills
