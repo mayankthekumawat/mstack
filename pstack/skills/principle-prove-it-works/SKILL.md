@@ -1,6 +1,6 @@
 ---
 name: principle-prove-it-works
-description: "Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'"
+description: Verify a feature, integration or artifact against its actual acceptance criteria before declaring it complete.
 ---
 
 # Prove It Works
@@ -9,7 +9,7 @@ Verify every task output by checking the real thing directly. Do not infer from 
 
 **Why:** Unverified work has unknown correctness. Indirect verification (file mtimes, output freshness, agent self-reports, cached screenshots) feels cheaper than direct observation. Acting on a wrong inference costs far more than checking the source.
 
-**Pattern:** After completing any task, ask: "how do I prove this actually works?"
+**Pattern:** Choose checks proportional to the change and its acceptance criteria. A documentation edit needs an accurate diff and valid references, not an unrelated application test suite.
 
 Check the real thing, not a proxy:
 - Check process liveness directly, not indirectly through derived state
@@ -20,13 +20,14 @@ Code and features:
 1. Build it (necessary but not sufficient)
 2. Run it and exercise the actual feature path
 3. Check the full chain: does data flow from input to output?
-4. For integrations, test the full communication path end-to-end
+4. For integrations or load replays, prove one complete user path, including relevant UI and downloads, before scaling up.
+5. Report completed/total work and distinguish synthetic, component and full-application tests. A successful component check does not establish application capacity.
 
 Delegation: trust artifacts, not self-reports.
 When verifying delegated work, inspect the actual output artifact (git diff, file contents, runtime behavior), not the delegate's summary. Agents report what they intended, not always what happened.
 
 ## Script the check when you can
 
-The strongest proof is a deterministic script that re-runs the same comparison, not a one-time eyeball. Write the script, run it, and keep its output as an artifact a reviewer can re-run instead of trusting your word. A script comparing the old and new compiled output catches what a glance misses.
+Reuse existing checks first. Add a deterministic script when repetition or a difficult comparison justifies it, then run it and keep the result. Small changes do not require a new verification artifact.
 
 Keep the artifact visible for the human. Commit it only for large or complex work where the trail has to be auditable later, like a big port or migration (the **show-me-your-work** skill). Most work just needs it visible, not committed.

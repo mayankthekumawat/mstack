@@ -9,6 +9,7 @@ The product is the experience. Every technical decision either helps or hurts it
 
 - Say no to 1,000 things (every feature, control, and option must earn its place)
 - Ship less, ship better (polished experience with three features beats rough one with ten)
+- When visual taste is unsettled, review a few references and anti-examples before producing a large batch or implementing a direction. Inspect the actual data before prototyping a data-driven experience.
 - Prototype before committing (design decisions are cheaper in throwaway HTML than production code)
 - Sweat the details (transitions, alignment, spacing, feedback, error states)
 - Tighten the core loop (every feature should serve the central workflow or get out of the way)

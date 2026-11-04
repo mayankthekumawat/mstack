@@ -1,11 +1,13 @@
 ---
 name: arena
-description: "Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape."
+description: Compare independent candidates when the user requests arena work or competing approaches would resolve a consequential uncertainty. Pick a base, combine useful parts and verify the result.
 ---
 
 # Arena
 
 Fan out N parallel attempts at the same task. Read every candidate end to end. Pick the strongest as the base. Graft the best ideas from the others into it. Verify the synthesized result.
+
+Follow the active runtime's delegation rules and the user's candidate count, model choices, and budget. Run subagents only when delegation is permitted. If an explicitly requested model or provider is unavailable, report the missing capability instead of silently substituting another. Use labeled parent passes only when no explicit request requires independent agents, and disclose that the passes are not independent.
 
 ## Start
 
@@ -24,9 +26,9 @@ The N candidates will receive the same prompt, so the prompt is the contract. Ge
 
 1. State the artifact each candidate is producing.
 2. Derive the rubric. State what success looks like for *this* task, then turn it into 3-6 concrete gradeable criteria. Concrete: `Adds a --dry-run flag that skips writes`. Vague: `code is correct`. The rubric is the picker's tool in Phase D; candidates only see the task.
-3. Pick the runners. Use `arena runners` from `.pstack/models.yaml` when present. Otherwise default to one each on `inherit-parent`, `inherit-parent`, `inherit-parent`, `inherit-parent`. Spawn more when the arena covers multiple design directions. Same model N times when the work is generation-bound rather than judgment-sensitive.
+3. Pick the runners. Use the invoker's runner settings, then `arena runners` from `.pstack/models.yaml` when present. Without a configured count, use the smallest useful panel, normally two candidates on `inherit-parent`. Add candidates when they cover distinct design directions worth comparing. Multiple candidates may use the same model.
    Omit the delegated model override for an `inherit-parent` or `auto` entry, or when the runtime does not support model overrides. Those entries still count toward N.
-4. Assign output paths. Each candidate writes to its own location (a git worktree where possible, otherwise a runtime-provided temporary directory such as `<temp>/arena-<slug>/candidate-<n>/`). N candidates writing to the same path is shared mutable state and fails the the **separate-before-serializing-shared-state** principle skill test.
+4. Assign output paths. Each candidate writes to its own location (a git worktree where possible, otherwise a runtime-provided temporary directory such as `<temp>/arena-<slug>/candidate-<n>/`). N candidates writing to the same path is shared mutable state and fails the **separate-before-serializing-shared-state** principle skill test.
 
 ## Phase B: Fan out
 
@@ -40,7 +42,7 @@ If a candidate fails to produce output, proceed with N-1 and note the dropout in
 
 ## Phase C: Cross-judge
 
-After all Phase B candidates complete, choose one model from the `arena cross-judge pool` in `.pstack/models.yaml` when present. Otherwise use `inherit-parent`, `inherit-parent`, `inherit-parent`, `inherit-parent`. Prefer a different model family from the parent's. Spawn one judge subagent in read-only mode on that model. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with the parent's reading in Phase D, not with the candidates themselves. Spawning while candidates are still writing means the judge sees partial or empty outputs and reports them as dropouts.
+After all Phase B candidates complete, use a read-only judge when delegation and the requested budget permit it. Use a model from the `arena cross-judge pool` in `.pstack/models.yaml` when configured, otherwise inherit the parent. Use a different model family only when the user's settings authorize it. The judge sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It may run in parallel with the parent's reading in Phase D, not with candidates that are still writing.
 
 Omit the judge's model override when the selected entry is `inherit-parent` or `auto`, or when the runtime does not support model overrides.
 

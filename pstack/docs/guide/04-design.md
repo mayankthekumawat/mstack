@@ -10,7 +10,7 @@ One attempt at a hard design locks in the first shape the model thought of. `arc
 architect design the import pipeline before writing any code. i care most about how callers use it.
 ```
 
-[`architect`](../../skills/architect/SKILL.md) grounds itself first, running `how` over the code the design touches and `why` when it moves ownership or layers. Then it runs `arena` to produce competing design sketches, with the caller's usage written first in each, followed by types, signatures, and a module map.
+[`architect`](../../skills/architect/SKILL.md) reads the affected implementation and uses `how` or `why` when the flow or rationale needs investigation. It writes the caller's usage first, then the types, signatures, and module boundaries needed for the change. It uses `arena` when requested or when independent candidates would resolve a consequential uncertainty and delegation is permitted. Constraints that settle the design do not require competing implementations.
 
 By default it proceeds straight from the synthesized design into implementation. If you want to see the design first, say so:
 
@@ -24,7 +24,7 @@ architect with checkpoint. stop and show me before implementing.
 arena take my prompt to the arena verbatim. i want to compare their proposals with yours.
 ```
 
-[`arena`](../../skills/arena/SKILL.md) is the general tool underneath. N subagents attempt the same design or code brief in parallel, each writing to its own worktree or directory. A read-only judge, on a different model family when your configuration allows one, scores every candidate against a rubric. The coordinator reads each candidate end to end, picks a base, grafts in the best ideas from the losers, and verifies the result.
+[`arena`](../../skills/arena/SKILL.md) compares independent attempts at the same design or code brief, each writing to its own worktree or directory. When the runtime and budget permit a separate judge, it scores every completed candidate against a rubric. Model choices follow the user's settings. The coordinator reads every candidate, picks a base, combines the useful parts, and verifies the result. Without a configured count, the panel normally starts with two candidates.
 
 ```mermaid
 flowchart LR
@@ -76,6 +76,6 @@ You might be wondering whether every change needs this. No. Most changes need no
 - A coverage matrix, set of parallel checks, or race with declared arms is `swarm`.
 - A contested design that's expensive to reverse gets `architect`, then `interrogate` before shipping.
 
-`poteto-mode` already applies this ladder. Boundary-crossing work triggers `architect` on its own, so you reach for these directly mainly when you want more or less scrutiny than the default.
+Use this ladder in proportion to the decision. `architect` handles consequential changes to module boundaries and contracts. Routine fixes and configuration edits do not need a separate architecture exercise.
 
 Next: [Build and clean the change](./05-build-and-clean.md).

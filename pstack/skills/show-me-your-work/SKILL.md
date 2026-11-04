@@ -1,6 +1,6 @@
 ---
 name: show-me-your-work
-description: "Keep a reviewable decision trail for long-running or unattended work: a TSV log with one row per decision (what, why, evidence, result). Local by default; commit it when a reviewer needs the trail to trust the result. Use for show-me-your-work, autonomous or multi-phase runs, or work a human reviews after stepping away."
+description: Keep a decision and evidence trail when requested or when long-running work needs a reviewable handoff. Log locally unless the project needs the trail committed.
 ---
 
 # Show me your work
@@ -63,18 +63,11 @@ If the runtime exposes no transcript, audit against the current conversation, to
 
 Fix the log, not the story. If the work diverged from what a row claims, the row is wrong.
 
-## Cross-model review of the trail
+## Review proportional to the work
 
-Before handing back, you must spawn a subagent on a different model family from the one that did the work. Self-review is not a substitute; the point is fresh eyes you cannot bring yourself. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky.
+Cross-check material decisions and verification claims against the actual evidence. Use an independent reviewer when the risk or complexity warrants one and delegation is available and authorized. Otherwise label the check as self-review; do not claim independent or cross-model review.
 
-If the runtime cannot spawn subagents or select another model, run the same review as a separate parent pass and label it as self-review. Do not claim cross-model independence.
-
-- Decisions logged with weak or absent evidence.
-- Verification steps skipped or claimed without proof in the transcript.
-- Choices that look risky in hindsight (premature, scope-creeping, papering over a symptom).
-- Gaps the user would otherwise miss on a casual skim.
-
-Every reply for a run that produced a trail ends with an "Attention" section. Lead with the reviewer's model on its own line (`reviewed by <model>`), then list each flag pointing to specific rows or moments. "No flags" is a valid value; the model name is not. The self-audit asks if the log told the truth; this asks what the user should still scrutinize even when it did.
+Report material unresolved risks and evidence gaps in the normal handoff. A short task does not need an additional reviewer or a fixed "Attention" section merely because it produced a log.
 
 ## Reviewing the trail
 
