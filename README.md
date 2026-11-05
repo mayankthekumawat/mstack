@@ -42,6 +42,7 @@ New independent skills can live under `skills/`. Existing pstack work stays unde
 |---|---|
 | [agent-mcp-design](./skills/agent-mcp-design/) | Captures Mayank's priorities for agent autonomy, minimal context, progressive disclosure, clear failure tracing, and realistic regression checks. |
 | [monthly-progress-report](./skills/monthly-progress-report/) | Builds a personal monthly report from work records and a previous report, checks claims against dated evidence, and renders a PDF with editable content. Includes an AI Cell format profile. |
+| [mayank-mode](./skills/mayank-mode/) | Draft communication preferences for reports, presentations, and scripts in Mayank's style, with worked examples for review. |
 
 ## Install skills
 
