@@ -49,17 +49,20 @@ New independent skills can live under `skills/`. Existing pstack work stays unde
 
 Install the directories you want from [`skills/`](./skills/) or [`pstack/skills/`](./pstack/skills/). You can also install the full collection.
 
-- For Codex, copy each skill directory to `~/.codex/skills/`.
-- For a workspace that follows the Agent Skills convention, copy them to `.agents/skills/`.
+- For shared Codex and T3 profiles, use `~/.agents/skills/`. Each profile can discover that shared installation.
+- For a profile-specific Codex installation, use that profile's `$CODEX_HOME/skills/` instead. Do not also install the same skill in a shared location visible to that profile.
+- For a workspace that follows the Agent Skills convention, use `.agents/skills/` only when the skill is meant to be project-local.
 - For another agent, use that runtime's skill directory.
+
+If a skill is already installed in both shared and profile locations, keep one enabled path per runtime. Codex supports an absolute `path` with `enabled = false` in `[[skills.config]]` in that profile's `config.toml`; use it to disable only the duplicate. A name-based rule disables every copy of that name. Preserve the files and confirm one enabled catalog entry plus readable references in each profile.
 
 Start a new agent session if the runtime loads its skill registry only at startup.
 
 To inspect or copy skills with Python, run this from the repository root:
 
 ```text
-python scripts/sync-skills.py --destination ~/.codex/skills --skill monthly-progress-report
-python scripts/sync-skills.py --destination ~/.codex/skills --skill monthly-progress-report --apply
+python scripts/sync-skills.py --destination ~/.agents/skills --skill monthly-progress-report
+python scripts/sync-skills.py --destination ~/.agents/skills --skill monthly-progress-report --apply
 ```
 
 Repeat `--destination` for multiple agent homes, or omit `--skill` to select both collections. The default prints a plan. `--apply` copies missing files, preserves unrelated skills, and skips any skill with conflicting local edits. Conflicts return exit code 2 and must be reconciled separately. The script does not delete files or create a background sync service.
