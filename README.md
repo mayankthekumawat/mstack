@@ -44,6 +44,7 @@ New independent skills can live under `skills/`. Existing pstack work stays unde
 | [monthly-progress-report](./skills/monthly-progress-report/) | Builds a personal monthly report from work records and a previous report, checks claims against dated evidence, and renders a PDF with editable content. Includes an AI Cell format profile. |
 | [margsarthi-test-questions](./skills/margsarthi-test-questions/) | Writes realistic MargSarthi test and demo questions from sanitized NHAI usage evidence, preserving natural wording and separating observed patterns from composed examples. |
 | [librechat-native-first](./skills/librechat-native-first/) | Prefers supported LibreChat configuration and native behavior, verifies effective runtime semantics, and requires Mayank's scoped approval with a concrete lean-change assessment before code edits. |
+| [suggest-a-skill](./skills/suggest-a-skill/) | Captures useful workflow discoveries and sends sanitized suggestions to Mayank's review thread for consultation before implementation or a PR. Includes a T3 delivery adapter. |
 
 ## Install skills
 
